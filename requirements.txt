@@ -1,0 +1,21 @@
+fastapi==0.136.3
+uvicorn==0.48.0
+sqlalchemy==2.0.41
+pydantic==2.13.4
+python-jose==3.5.0
+bcrypt==5.0.0
+python-multipart==0.0.29
+python-dotenv==1.2.2
+slowapi==0.1.9
+opencv-python==4.13.0.92
+easyocr==1.7.2
+ultralytics==8.4.54
+fast-plate-ocr[onnx]==1.1.0
+onnxruntime==1.26.0
+aiofiles
+pandas
+openpyxl
+fpdf2
+alembic
+# PostgreSQL driver
+psycopg2-binary

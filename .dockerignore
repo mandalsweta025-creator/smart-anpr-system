@@ -1,0 +1,32 @@
+# Python
+venv/
+anpr_env/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Node / frontend dev
+smart-anpr-dashboard/node_modules/
+smart-anpr-dashboard/dist/
+
+# Runtime data (use volumes instead)
+anpr.db
+storage/
+detections/
+exports/
+logs/
+
+# Dev / test artifacts
+*.zip
+diag_*.jpg
+diagnose_anpr.py
+live_test.py
+setup_demo.py
+tests/
+
+# Git / IDE
+.git/
+.gitignore
+.env
+*.md

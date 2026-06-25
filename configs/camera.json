@@ -1,0 +1,18 @@
+{
+  "cameras": [
+    {
+      "id": "1",
+      "name": "USB Camera",
+      "type": "webcam",
+      "source": 0,
+      "location": "Local Webcam"
+    },
+    {
+      "id": "2",
+      "name": "IP Camera",
+      "type": "ip",
+      "source": "rtsp://admin:1234@192.168.1.20:554/stream1",
+      "location": "Network Camera"
+    }
+  ]
+}

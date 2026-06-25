@@ -1,0 +1,31 @@
+/**
+ * relTime(iso) — "2h ago", "3d ago", "just now"
+ * absTime(iso) — locale-formatted absolute datetime string
+ */
+
+export function relTime(iso) {
+  if (!iso) return "—";
+  const diffMs = Date.now() - new Date(iso).getTime();
+  if (isNaN(diffMs)) return "—";
+  const s = Math.floor(diffMs / 1000);
+  if (s < 60)  return "just now";
+  const m = Math.floor(s / 60);
+  if (m < 60)  return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24)  return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  if (d < 30)  return `${d}d ago`;
+  const mo = Math.floor(d / 30);
+  if (mo < 12) return `${mo}mo ago`;
+  return `${Math.floor(mo / 12)}y ago`;
+}
+
+export function absTime(iso) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d)) return "—";
+  return d.toLocaleString("en-IN", {
+    day: "2-digit", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  });
+}

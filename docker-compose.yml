@@ -1,0 +1,81 @@
+# Smart ANPR System — Docker Compose
+# Three services: PostgreSQL → ANPR backend → Nginx
+#
+# Quick start:
+#   cp .env.example .env          # then set SECRET_KEY and POSTGRES_PASSWORD
+#   docker compose up -d --build
+#   docker compose logs -f anpr   # watch startup + migrations
+#
+# The app is then available at http://localhost (nginx) or http://localhost:8000 (direct).
+
+services:
+
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       anpr_db
+      POSTGRES_USER:     anpr_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-strongpassword}
+    volumes:
+      - anpr-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anpr_user -d anpr_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ── ANPR backend ────────────────────────────────────────────────────────────
+  anpr:
+    build: .
+    image: smart-anpr-system:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL:            postgresql+psycopg2://anpr_user:${POSTGRES_PASSWORD:-strongpassword}@db:5432/anpr_db
+      CORS_ORIGINS:            http://localhost
+      DETECTION_MAX_AGE_DAYS:  "30"
+      DETECTION_MAX_SIZE_MB:   "5000"
+    env_file:
+      # Values in .env override the environment block above.
+      # Copy .env.example → .env and set SECRET_KEY + POSTGRES_PASSWORD.
+      - path: .env
+        required: false
+    volumes:
+      # Detection snapshots — mount a host path for easy access
+      - anpr-storage:/app/storage
+      # Camera config (sources, roles) — survives container rebuilds
+      - anpr-configs:/app/backend/app/configs
+      # Pre-downloaded YOLO model weights — avoids re-download on restart
+      - anpr-weights:/app/backend/models/weights
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ── Nginx reverse proxy ─────────────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    depends_on:
+      anpr:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+volumes:
+  anpr-pgdata:
+  anpr-storage:
+  anpr-configs:
+  anpr-weights:

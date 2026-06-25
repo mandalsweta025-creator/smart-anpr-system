@@ -1,0 +1,39 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+.venv/
+anpr_env/
+*.egg-info/
+
+# Database
+*.db
+*.sqlite3
+
+# Node / frontend
+node_modules/
+dist/
+.DS_Store
+
+# Storage (snapshots, exports, logs)
+storage/
+captures/
+detections/
+logs/
+exports/
+
+# AI model weights (large files — download separately)
+ai_models/
+
+# Build archives
+*.zip
+
+# Claude Code session data
+.claude/
+
+# Generated data files
+vehicle_records.xlsx
